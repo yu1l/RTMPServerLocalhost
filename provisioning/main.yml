@@ -3,5 +3,10 @@
   remote_user: vagrant
   become: True
   tasks:
-    - include: sample.yml
-    - include: nginx.yml
+    # - include: sample.yml
+    # - include: nginx.yml
+    - include: rtmp.yml html_src=nginx/index.html html_dest=/usr/local/nginx/html/index.html conf_src=nginx/nginx_with_rtmp.conf.default conf_dest=/usr/local/nginx/conf/nginx.conf
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted

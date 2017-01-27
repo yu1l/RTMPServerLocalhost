@@ -1,0 +1,8 @@
+---
+- name: update nginx.conf
+  copy: src={{ conf_src }} dest={{ conf_dest }} owner=root group=root mode=0644
+  notify: restart nginx
+
+- name: update index.html
+  copy: src={{ html_src }} dest={{ html_dest }} owner=root group=root mode=0644
+  notify: restart nginx
