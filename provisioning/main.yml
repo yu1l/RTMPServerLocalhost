@@ -1,0 +1,5 @@
+---
+- hosts: stagingServer
+  become: True
+  tasks:
+    - include: sample.yml
