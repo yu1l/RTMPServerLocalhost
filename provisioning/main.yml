@@ -1,5 +1,7 @@
 ---
 - hosts: stagingServer
+  remote_user: vagrant
   become: True
   tasks:
     - include: sample.yml
+    - include: nginx.yml
