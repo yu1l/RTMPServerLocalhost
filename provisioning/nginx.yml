@@ -1,6 +1,7 @@
 - name: Install Basic Packages
   apt: name={{ item }} state=present update_cache=yes
   with_items:
+    - git
     - build-essential
     - libpcre3
     - libpcre3-dev
@@ -12,37 +13,36 @@
   file: path=/home/vagrant/working state=directory
 
 - name: Download Nginx
-  shell: 'cd /home/vagrant/working && wget http://nginx.org/download/nginx-1.11.9.tar.gz'
+  get_url:
+    url: 'http://nginx.org/download/nginx-1.11.9.tar.gz'
+    dest: /home/vagrant/working
 
 - name: Download Nginx-RTMP-Module
-  shell: 'cd /home/vagrant/working && wget https://github.com/arut/nginx-rtmp-module/archive/master.zip'
+  get_url:
+    url: 'https://github.com/arut/nginx-rtmp-module/archive/master.zip'
+    dest: /home/vagrant/working
 
 - name: Tar nginx
   shell: 'cd /home/vagrant/working && tar -zxvf nginx-1.11.9.tar.gz'
 
 - name: Unzip Nginx-RTMP-Module
-  shell: 'cd /home/vagrant/working && unzip master.zip'
-
-- name: Configure Nginx
-  shell: 'cd /home/vagrant/working/nginx-1.11.9 && ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master'
+  shell: 'cd /home/vagrant/working && unzip nginx-rtmp-module-master.zip'
 
 - name: Install Nginx
-  shell: 'cd /home/vagrant/working/nginx-1.11.9 && make && make install'
+  shell: "cd /home/vagrant/working/nginx-1.11.9 && {{ item }}"
+  with_items:
+    - ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master
+    - make
+    - make install
 
 - name: Install Nginx init script
-  shell: 'wget https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx -O /etc/init.d/nginx'
+  get_url:
+    url: 'https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx'
+    dest: /etc/init.d/nginx
 
 - name: Change Permission
   shell: 'chmod +x /etc/init.d/nginx'
 
 - name: Update nginx
   shell: 'update-rc.d nginx defaults'
-
-- name: Start Nginx
-  service: name=nginx state=started
-
-- name: Stop Nginx
-  service: name=nginx state=stopped
-
-- name: Install Git
-  apt: name=git update_cache=yes
+  notify: restart nginx
