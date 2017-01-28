@@ -1,24 +1,8 @@
 ---
-- name: update nginx.conf
-  copy: src={{ conf_src }} dest={{ conf_dest }} owner=root group=root mode=0644
-  notify: restart nginx
+- name: Download Nginx-RTMP-Module
+  get_url:
+    url: 'https://github.com/arut/nginx-rtmp-module/archive/master.zip'
+    dest: /home/vagrant/working
 
-- name: update index.html
-  copy: src={{ html_src }} dest={{ html_dest }} owner=root group=root mode=0644
-  notify: restart nginx
-
-- name: Create live directory
-  file: path=/usr/local/nginx/html/live state=directory owner=root group=root mode=0644
-  notify: restart nginx
-
-- name: Enable to add-apt-repository
-  apt: name=software-properties-common state=present
-
-- name: Add FFMPEG
-  shell: 'add-apt-repository ppa:kirillshkrogalev/ffmpeg-next'
-
-- name: Update
-  apt: update_cache=yes
-
-- name: Install FFMPEG
-  apt: name=ffmpeg state=present
+- name: Unzip Nginx-RTMP-Module
+  shell: 'cd /home/vagrant/working && unzip nginx-rtmp-module-master.zip'
