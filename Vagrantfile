@@ -5,12 +5,14 @@ Vagrant.configure(2) do |config|
     staging.vm.box_check_update = false
     staging.vm.network 'public_network'
     staging.vm.network 'forwarded_port', guest: 80, host: 8080
+    staging.vm.network 'forwarded_port', guest: 1935, host: 8935
     staging.vm.synced_folder '../data', '/vagrant_data', disabled: true
 
     staging.vm.provider 'virtualbox' do |vb|
       vb.gui = false
       vb.memory = '4096'
     end
+
     staging.vm.provision 'ansible' do |ansible|
       ansible.playbook = 'provisioning/main.yml'
     end

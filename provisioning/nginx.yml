@@ -1,0 +1,73 @@
+---
+- name: Install Basic Packages
+  apt: name={{ item }} state=present update_cache=true
+  with_items:
+    - git
+    - build-essential
+    - libpcre3
+    - libpcre3-dev
+    - libssl-dev
+    - wget
+    - unzip
+
+- stat: path=/home/vagrant/working/nginx-1.11.9.tar.gz
+  register: nginx_file
+
+- stat: path=/home/vagrant/working/nginx-rtmp-module-master.zip
+  register: rtmp_module
+
+- name: Create working directory
+  file: path=/home/vagrant/working state=directory
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: Download
+  get_url:
+    url: 'http://nginx.org/download/nginx-1.11.9.tar.gz'
+    dest: /home/vagrant/working
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: Tar nginx
+  shell: 'cd /home/vagrant/working && tar -zxvf nginx-1.11.9.tar.gz'
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- include: rtmp.yml
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: Install Nginx
+  shell: "cd /home/vagrant/working/nginx-1.11.9 && {{ item }}"
+  with_items:
+    - ./configure --with-http_ssl_module --add-module=../nginx-rtmp-module-master
+    - make
+    - make install
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: Install Nginx init script
+  get_url:
+    url: 'https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx'
+    dest: /etc/init.d/nginx
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: Change Permission
+  shell: 'chmod +x /etc/init.d/nginx'
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: Update nginx
+  shell: 'update-rc.d nginx defaults'
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+  notify: restart nginx
+
+- name: Create live directory
+  file: path=/usr/local/nginx/html/live state=directory owner=root group=root mode=0644
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+  notify: restart nginx
+
+- include: ffmpeg.yml
+  when: not nginx_file.stat.exists and not rtmp_module.stat.exists
+
+- name: update nginx.conf
+  copy: src={{ conf_src }} dest={{ conf_dest }} owner=root group=root mode=0644
+  notify: restart nginx
+
+- name: update index.html
+  copy: src={{ html_src }} dest={{ html_dest }} owner=root group=root mode=0644
+  notify: restart nginx

@@ -1,0 +1,8 @@
+---
+- name: Download Nginx-RTMP-Module
+  get_url:
+    url: 'https://github.com/arut/nginx-rtmp-module/archive/master.zip'
+    dest: /home/vagrant/working
+
+- name: Unzip Nginx-RTMP-Module
+  shell: 'cd /home/vagrant/working && unzip nginx-rtmp-module-master.zip'
