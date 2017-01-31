@@ -1,0 +1,74 @@
+---
+- name: Setup Ruby on Rails
+  apt: name={{ item }}
+  with_items:
+    - build-essential
+    - git
+    - nodejs
+    - libssl-dev
+    - libyaml-dev
+    - libreadline6-dev
+    - zlib1g-dev
+    - libsqlite3-dev
+    - sqlite3
+    - autoconf
+    - bison
+    - libffi-dev
+    - libgdbm3
+    - libgdbm-dev
+
+- name: Check Rbenv
+  stat: path={{ home }}/.rbenv
+  register: rbenv
+
+- name: Install Rbenv
+  git: repo=https://github.com/sstephenson/rbenv.git dest={{ home }}/.rbenv
+  when: rbenv.stat.exists == False
+
+- name: Export PATH
+  lineinfile: >
+    dest='{{ home }}/.profile'
+    line='export PATH=$HOME/.rbenv/bin:$PATH'
+  when: rbenv.stat.exists == False
+
+- name: Eval rbenv init
+  lineinfile: >
+    dest='{{ home }}/.profile'
+    line='eval "$(rbenv init -)"'
+  when: rbenv.stat.exists == False
+
+- file: path={{ home }}/.rbenv owner=vagrant group=vagrant
+
+- name: Check ruby-build
+  stat: path={{ home }}/.rbenv/plugins/ruby-build
+  register: ruby_build
+
+- name: Install ruby-build
+  git: repo=https://github.com/sstephenson/ruby-build.git dest={{ home }}/.rbenv/plugins/ruby-build
+  when: ruby_build.stat.exists == False
+
+- name: source bashrc
+  shell: bash -lc "source {{ home }}/.profile"
+  when: rbenv.stat.exists == False
+
+- name: Installed rubies
+  shell: bash -lc "rbenv versions | grep {{ ruby_version }}"
+  register: installed
+  failed_when: installed.rc not in [0, 1]
+
+- name: Install Ruby specific version
+  shell: bash -lc "rbenv install {{ ruby_version }}"
+  when: installed|failed
+
+- name: Set Ruby specific version as global
+  shell: bash -lc "rbenv global {{ ruby_version }}"
+
+- name: Update Gem System
+  shell: bash -lc "gem update --system"
+
+- name: Mysql
+  apt: name={{ item }} state=present
+  with_items:
+    - mysql-server
+    - mysql-client
+    - libmysqlclient-dev

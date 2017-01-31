@@ -5,6 +5,7 @@
   tasks:
     - include: sample.yml
     - include: nginx.yml html_src=nginx/index.html html_dest=/usr/local/nginx/html/index.html conf_src=nginx/nginx.conf conf_dest=/usr/local/nginx/conf/nginx.conf
+    - include: rails.yml home=/home/vagrant ruby_version=2.4.0
 
   handlers:
     - name: restart nginx
