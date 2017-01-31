@@ -1,0 +1,6 @@
+---
+- name: Create Web Group
+  group: name=web state=present
+
+- name: Create Deploy User
+  user: name=deploy group=web

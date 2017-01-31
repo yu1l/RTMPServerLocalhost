@@ -59,12 +59,15 @@
 - name: Install Ruby specific version
   shell: bash -lc "rbenv install {{ ruby_version }}"
   when: installed|failed
+  when: rbenv.stat.exists == False
 
 - name: Set Ruby specific version as global
   shell: bash -lc "rbenv global {{ ruby_version }}"
+  when: rbenv.stat.exists == False
 
 - name: Update Gem System
   shell: bash -lc "gem update --system"
+  when: rbenv.stat.exists == False
 
 - name: Mysql
   apt: name={{ item }} state=present
