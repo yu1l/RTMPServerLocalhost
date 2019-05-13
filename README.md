@@ -1,3 +1,13 @@
+#### Setup Requirements
+- Download [Vagrant](https://www.vagrantup.com/downloads.html)
+- Download [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+```sh
+$ git clone https://github.com/yu1l/RTMPServerLocalhost
+$ cd RTMPServerLocalhost
+$ vagrant up
+```
+
 ## RTMP Server
 
 #### OBS設定
