@@ -2,8 +2,9 @@
 - name: Enable to add-apt-repository
   apt: name=software-properties-common state=present
 
-- name: Add FFMPEG
-  shell: 'add-apt-repository ppa:kirillshkrogalev/ffmpeg-next'
+# FFMPEG already exists in apt repo. from
+# - name: Add FFMPEG
+#   shell: 'add-apt-repository ppa:kirillshkrogalev/ffmpeg-next'
 
 - name: Update
   apt: update_cache=yes

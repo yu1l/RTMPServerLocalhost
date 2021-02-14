@@ -1,8 +1,6 @@
 #### Setup Requirements
-- Download [Vagrant](https://www.vagrantup.com/downloads.html)
-- Download [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-
 ```sh
+$ brew install vagrant ansible virtualbox
 $ git clone https://github.com/yu1l/RTMPServerLocalhost
 $ cd RTMPServerLocalhost
 $ vagrant up
@@ -14,7 +12,7 @@ $ vagrant up
 パラメータ | 値
 ---|---
 URL | rtmp://127.0.0.1:8935/live/
-Stream key | yhoshino11
+Stream key | me
 
 ### カスタムな値
-Stream Key | yhoshino11?token=dkBT5E7DgwKLUsFNn32zWPeZybo04QJjvA6lcqMpVGRfC9ah
+Stream Key | me?token=dkBT5E7DgwKLUsFNn32zWPeZybo04QJjvA6lcqMpVGRfC9ah
